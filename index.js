@@ -1,5 +1,4 @@
 import iconFinder from './iconfinder';
-import TabIcon from './TabIcon';
 
 let cwd = '';
 let iconData = undefined;
@@ -57,7 +56,7 @@ exports.middleware = (store) => (next) => (action) => {
 };
 
 
-export const getTabProps = (uid, parentProps, props) => {
+exports.getTabProps = (uid, parentProps, props) => {
   const newProps = { ...props };
   newProps.text = (
     <span>
@@ -67,7 +66,7 @@ export const getTabProps = (uid, parentProps, props) => {
   return newProps;
 };
 
-export const getTabsProps = (parentProps, props) => {
+exports.getTabsProps = (parentProps, props) => {
   if (props.tabs.length !== 1 || typeof props.tabs[0].title !== 'string') return props;
   const newProps = { ...props };
   newProps.tabs[0].title = (
@@ -76,4 +75,44 @@ export const getTabsProps = (parentProps, props) => {
     </span>
   );
   return newProps;
+};
+
+exports.decorateTab = (Tab, { React }) => {
+    return class extends React.PureComponent {
+        constructor(props) {
+            super(props);
+
+            this.state = {
+                cwd: '',
+                iconData: undefined
+            };
+        }
+
+        render() {
+            const { customChildren } = this.props
+            const existingChildren = customChildren ? customChildren instanceof Array ? customChildren : [customChildren] : [];
+
+            return (
+                React.createElement(Tab, Object.assign({}, this.props, {
+                      React.createElement('div', { className: 'footer_group group_overflow' },
+                            React.createElement('div', { className: 'component_component component_cwd' }, "Moises" + this.state.cwd)
+                      )
+                )
+              )
+            );
+        }
+
+        componentDidMount() {
+            this.interval = setInterval(() => {
+                this.setState({
+                    cwd: cwd,
+                    iconData: iconData
+                });
+            }, 1000);
+        }
+
+        componentWillUnmount() {
+            clearInterval(this.interval);
+        }
+    };
 };
