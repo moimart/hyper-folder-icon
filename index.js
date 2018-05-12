@@ -17,7 +17,7 @@ var iconFinder = (folder) => new Promise((resolve,reject) => {
           return reject(error);
         }
 
-        icon.entries.forEach((entry) => console.log(entry.type));
+        //icon.entries.forEach((entry) => console.log(entry.type));
 
         var found = icon.entries.find((entry) => {
           return (entry.type === 'ic07' || entry.type === 'ic08');
@@ -44,7 +44,7 @@ var iconFinder = (folder) => new Promise((resolve,reject) => {
   .catch((error) => reject(error));
 });
 
-iconFinder('/Users/moimart/reference-assets') // Specify a folder
+iconFinder('/Users/moimart') // Specify a folder
 .then((icon) => {
   console.log(icon);
 
