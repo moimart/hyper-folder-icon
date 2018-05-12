@@ -43,7 +43,7 @@ var iconFinder = (folder) => new Promise((resolve,reject) => {
   .catch((error) => reject(error));
 });
 
-exports = iconFinder;
+exports.iconFinder = iconFinder;
 
 iconFinder('/Users/moimart') // Specify a folder
 .then((icon) => {

@@ -1,4 +1,5 @@
-import iconFinder from './iconfinder';
+const iconFinder = require('./iconfinder').iconFinder;
+const { exec } = require('child_process');
 
 let cwd = '';
 let iconData = undefined;
@@ -55,28 +56,6 @@ exports.middleware = (store) => (next) => (action) => {
     next(action);
 };
 
-
-exports.getTabProps = (uid, parentProps, props) => {
-  const newProps = { ...props };
-  newProps.text = (
-    <span>
-      <span style={{ verticalAlign: 'middle' }}>{props.text}</span>
-    </span>
-  );
-  return newProps;
-};
-
-exports.getTabsProps = (parentProps, props) => {
-  if (props.tabs.length !== 1 || typeof props.tabs[0].title !== 'string') return props;
-  const newProps = { ...props };
-  newProps.tabs[0].title = (
-    <span>
-      <span style={{ verticalAlign: 'middle' }}>{props.tabs[0].title}</span>
-    </span>
-  );
-  return newProps;
-};
-
 exports.decorateTab = (Tab, { React }) => {
     return class extends React.PureComponent {
         constructor(props) {
@@ -89,16 +68,8 @@ exports.decorateTab = (Tab, { React }) => {
         }
 
         render() {
-            const { customChildren } = this.props
-            const existingChildren = customChildren ? customChildren instanceof Array ? customChildren : [customChildren] : [];
-
             return (
-                React.createElement(Tab, Object.assign({}, this.props, {
-                      React.createElement('div', { className: 'footer_group group_overflow' },
-                            React.createElement('div', { className: 'component_component component_cwd' }, "Moises" + this.state.cwd)
-                      )
-                )
-              )
+                React.createElement(Tab, Object.assign({}, this.props, "Hola"))
             );
         }
 
