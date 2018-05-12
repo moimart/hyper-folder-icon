@@ -1,58 +1,79 @@
-const Icns = require('apple-icns')
-const resourceFork = require('resourceforkjs').resourceFork;
-const fs = require('fs');
+import iconFinder from './iconfinder';
+import TabIcon from './TabIcon';
 
+let cwd = '';
+let iconData = undefined;
 
-var iconFinder = (folder) => new Promise((resolve,reject) => {
-  let file = new resourceFork(folder + '/Icon\r');
-
-  file.read()
-  .then(() => {
-    let buffer = Buffer.from(file.resources['icns'][49081].data.buffer,260);
-    let icon = new Icns(buffer);
-
-    try {
-      icon.open((error) => {
-        if (error) {
-          return reject(error);
-        }
-
-        //icon.entries.forEach((entry) => console.log(entry.type));
-
-        var found = icon.entries.find((entry) => {
-          return (entry.type === 'ic07' || entry.type === 'ic08');
-        })
-
-        if (found) {
-          icon.readEntryData(found, ( error, _buffer ) => {
-            if (error) {
-              return reject(error);
+const setCwd = (pid, action) => {
+    if (process.platform == 'win32') {
+        let directoryRegex = /([a-zA-Z]:[^\:\[\]\?\"\<\>\|]+)/mi;
+        if (action && action.data) {
+            let path = directoryRegex.exec(action.data);
+            if(path){
+                cwd = path[0];
             }
-
-            resolve(_buffer);
-          });
-        } else {
-          resolve('Icon not found');
         }
+    } else {
+        exec(`lsof -p ${pid} | awk '$4=="cwd"' | tr -s ' ' | cut -d ' ' -f9-`, (err, stdout) => {
+            cwd = stdout.trim();
 
-      })
-    } catch (exception) {
-      reject('Cannot open icns');
+            iconFinder(cwd)
+            .then(icon => { iconData = icon; })
+            .catch(error => { iconData = undefined; });
+        });
     }
 
-  })
-  .catch((error) => reject(error));
-});
+};
 
-iconFinder('/Users/moimart') // Specify a folder
-.then((icon) => {
-  console.log(icon);
+exports.middleware = (store) => (next) => (action) => {
+    const uids = store.getState().sessions.sessions;
 
-  //write the icon to a file
-  fs.writeFile('/Users/moimart/iconito.png',icon,(err) => {
-    if (err) {
-      console.log|(err);
+    switch (action.type) {
+        case 'SESSION_SET_XTERM_TITLE':
+            pid = uids[action.uid].pid;
+            break;
+
+        case 'SESSION_ADD':
+            pid = action.pid;
+            setCwd(pid);
+            break;
+
+        case 'SESSION_ADD_DATA':
+            const { data } = action;
+            const enterKey = data.indexOf('\n') > 0;
+
+            if (enterKey) {
+                setCwd(pid, action);
+            }
+            break;
+
+        case 'SESSION_SET_ACTIVE':
+            pid = uids[action.uid].pid;
+            setCwd(pid);
+            break;
     }
-  })
-})
-.catch((error) => console.log(error));
+
+    next(action);
+};
+
+
+export const getTabProps = (uid, parentProps, props) => {
+  const newProps = { ...props };
+  newProps.text = (
+    <span>
+      <span style={{ verticalAlign: 'middle' }}>{props.text}</span>
+    </span>
+  );
+  return newProps;
+};
+
+export const getTabsProps = (parentProps, props) => {
+  if (props.tabs.length !== 1 || typeof props.tabs[0].title !== 'string') return props;
+  const newProps = { ...props };
+  newProps.tabs[0].title = (
+    <span>
+      <span style={{ verticalAlign: 'middle' }}>{props.tabs[0].title}</span>
+    </span>
+  );
+  return newProps;
+};
