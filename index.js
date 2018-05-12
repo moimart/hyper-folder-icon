@@ -30,13 +30,14 @@ var iconFinder = (folder) => new Promise((resolve,reject) => {
     }
 
   })
-  .catch((error) => reject({icon:undefined, error: error}));
+  .catch((error) => reject(error));
 });
 
-iconFinder('/Users/moimart/kikkei-labs')
+iconFinder('/Users/moimart/kikkei-labs') // Specify a folder
 .then((icon) => {
   console.log(icon);
 
+  //write the icon to a file
   fs.writeFile('/Users/moimart/iconito.png',icon,(err) => {
     if (err) {
       console.log|(err);
