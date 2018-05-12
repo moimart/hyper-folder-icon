@@ -17,23 +17,34 @@ var iconFinder = (folder) => new Promise((resolve,reject) => {
           return reject(error);
         }
 
-        icon.readEntryData(icon.entries[2], ( error, _buffer ) => {
-          if (error) {
-            return reject(error);
-          }
+        icon.entries.forEach((entry) => console.log(entry.type));
 
-          resolve(_buffer);
-        });
+        var found = icon.entries.find((entry) => {
+          return (entry.type === 'ic07' || entry.type === 'ic08');
+        })
+
+        if (found) {
+          icon.readEntryData(found, ( error, _buffer ) => {
+            if (error) {
+              return reject(error);
+            }
+
+            resolve(_buffer);
+          });
+        } else {
+          resolve('Icon not found');
+        }
+
       })
     } catch (exception) {
-      reject(exception);
+      reject('Cannot open icns');
     }
 
   })
   .catch((error) => reject(error));
 });
 
-iconFinder('/Users/moimart/kikkei-labs') // Specify a folder
+iconFinder('/Users/moimart/reference-assets') // Specify a folder
 .then((icon) => {
   console.log(icon);
 
