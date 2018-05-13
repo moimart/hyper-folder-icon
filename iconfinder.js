@@ -2,6 +2,7 @@ const Icns = require('apple-icns')
 const resourceFork = require('resourceforkjs').resourceFork;
 
 var iconFinder = (folder) => new Promise((resolve,reject) => {
+  
   let file = new resourceFork(folder + '/Icon\r');
 
   file.read()
@@ -42,4 +43,4 @@ var iconFinder = (folder) => new Promise((resolve,reject) => {
   .catch((error) => reject(error));
 });
 
-exports.default = iconFinder;
+exports.iconFinder = iconFinder;

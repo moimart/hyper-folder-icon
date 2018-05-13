@@ -1,5 +1,6 @@
-const iconFinder = require('./iconfinder');
-const defaultIcon = require('./defaultIcon');
+const iconFinder = require('./iconfinder').iconFinder;
+const defaultIcon = require('./defaultIcon').icon;
+const path = require('path');
 
 const localCwd = (cwd) => new Promise((resolve,reject) => {
 
@@ -7,12 +8,22 @@ const localCwd = (cwd) => new Promise((resolve,reject) => {
       if (filepath[0] === '~') {
           return path.join(process.env.HOME, filepath.slice(1));
       }
+
+      if (filepath[0] !== '/') {
+        return undefined;
+      }
       return filepath;
   }
 
-  iconFinder(resolveHome(cwd))
-  .then(icon => resolve(Buffer.from(icon).toString('base64')))
-  .catch(error => reject(defaultIcon));
+  console.log('THE FILE PATH TO ' + cwd);
+
+  let realPath = resolveHome(cwd);
+
+  if (realPath !== undefined) {
+    iconFinder(resolveHome(cwd))
+    .then(icon => resolve(Buffer.from(icon).toString('base64')))
+    .catch(error => reject(defaultIcon));
+  }
 });
 
 exports.decorateConfig = (config) => {
@@ -35,7 +46,6 @@ exports.decorateTab = (Tab, { React }) => {
             super(props);
 
             this.state = {
-                cwd: '',
                 iconData: defaultIcon
             };
         }
@@ -120,7 +130,7 @@ exports.decorateTabs = (Tabs, { React }) => {
     render() {
       const { tabs } = this.props;
 
-      let newProps = this.props;
+      let newProps = Object.assign({},this.props);
 
       if (tabs.length === 1) {
         newProps = Object.assign({},this.props,{
