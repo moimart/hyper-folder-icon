@@ -1,21 +1,5 @@
-const iconFinder = require('./iconfinder').iconFinder;
-const { exec } = require('child_process');
-
-const defaultIcon = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-
-exports.decorateConfig = (config) => {
-    return Object.assign({}, config, {
-        css: `
-            ${config.css || ''}
-            .folder_icon {
-              display: inline-flex;
-              float: left;
-              margin-top: -30px;
-              margin-left: 10%;
-            }
-        `
-    });
-};
+const iconFinder = require('./iconfinder');
+const defaultIcon = require('./defaultIcon');
 
 const localCwd = (cwd) => new Promise((resolve,reject) => {
 
@@ -30,6 +14,20 @@ const localCwd = (cwd) => new Promise((resolve,reject) => {
   .then(icon => resolve(Buffer.from(icon).toString('base64')))
   .catch(error => reject(defaultIcon));
 });
+
+exports.decorateConfig = (config) => {
+    return Object.assign({}, config, {
+        css: `
+            ${config.css || ''}
+            .folder_icon {
+              display: inline-flex;
+              float: left;
+              margin-top: -30px;
+              margin-left: 10%;
+            }
+        `
+    });
+};
 
 exports.decorateTab = (Tab, { React }) => {
     return class extends React.PureComponent {
@@ -46,7 +44,12 @@ exports.decorateTab = (Tab, { React }) => {
             return (
               React.createElement(Tab, Object.assign({},this.props,{
                 customChildren: React.createElement('div',{},
-                  React.createElement('img', {className: 'folder_icon', width: 24, height: 24, src:"data:image/png;base64," + this.state.iconData})
+                  React.createElement('img', {
+                    className: 'folder_icon',
+                    width: 24,
+                    height: 24,
+                    src:"data:image/png;base64," + this.state.iconData
+                  })
                 )
               })));
         }
@@ -55,13 +58,11 @@ exports.decorateTab = (Tab, { React }) => {
           localCwd(this.props.text)
           .then((icon) => {
             this.setState({
-              cwd: this.props.text,
               iconData: icon
             });
           })
           .catch((icon) => {
             this.setState({
-              cwd: this.props.text,
               iconData: icon
             });
           });
@@ -73,13 +74,11 @@ exports.decorateTab = (Tab, { React }) => {
             localCwd(this.props.text)
             .then((icon) => {
               this.setState({
-                cwd: this.props.text,
                 iconData: icon
               });
             })
             .catch((icon) => {
               this.setState({
-                cwd: this.props.text,
                 iconData: icon
               });
             });
@@ -126,7 +125,12 @@ exports.decorateTabs = (Tabs, { React }) => {
       if (tabs.length === 1) {
         newProps = Object.assign({},this.props,{
           customChildren: React.createElement('div',{},
-            React.createElement('img', {className: 'folder_icon', width: 24, height: 24, src:"data:image/png;base64," + this.state.iconData})
+            React.createElement('img', {
+              className: 'folder_icon',
+              width: 24,
+              height: 24,
+              src:"data:image/png;base64," + this.state.iconData
+            })
           )
         });
       }
