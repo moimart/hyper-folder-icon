@@ -1,60 +1,35 @@
 const iconFinder = require('./iconfinder').iconFinder;
 const { exec } = require('child_process');
 
-let cwd = '';
-let iconData = undefined;
+const defaultIcon = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
-const setCwd = (pid, action) => {
-    if (process.platform == 'win32') {
-        let directoryRegex = /([a-zA-Z]:[^\:\[\]\?\"\<\>\|]+)/mi;
-        if (action && action.data) {
-            let path = directoryRegex.exec(action.data);
-            if(path){
-                cwd = path[0];
+exports.decorateConfig = (config) => {
+    return Object.assign({}, config, {
+        css: `
+            ${config.css || ''}
+            .folder_icon {
+              display: inline-flex;
+              float: left;
+              margin-top: -30px;
+              margin-left: 10%;
             }
-        }
-    } else {
-        exec(`lsof -p ${pid} | awk '$4=="cwd"' | tr -s ' ' | cut -d ' ' -f9-`, (err, stdout) => {
-            cwd = stdout.trim();
-
-            iconFinder(cwd)
-            .then(icon => { iconData = icon; })
-            .catch(error => { iconData = undefined; });
-        });
-    }
-
+        `
+    });
 };
 
-exports.middleware = (store) => (next) => (action) => {
-    const uids = store.getState().sessions.sessions;
+const localCwd = (cwd) => new Promise((resolve,reject) => {
 
-    switch (action.type) {
-        case 'SESSION_SET_XTERM_TITLE':
-            pid = uids[action.uid].pid;
-            break;
+  let resolveHome = (filepath) => {
+      if (filepath[0] === '~') {
+          return path.join(process.env.HOME, filepath.slice(1));
+      }
+      return filepath;
+  }
 
-        case 'SESSION_ADD':
-            pid = action.pid;
-            setCwd(pid);
-            break;
-
-        case 'SESSION_ADD_DATA':
-            const { data } = action;
-            const enterKey = data.indexOf('\n') > 0;
-
-            if (enterKey) {
-                setCwd(pid, action);
-            }
-            break;
-
-        case 'SESSION_SET_ACTIVE':
-            pid = uids[action.uid].pid;
-            setCwd(pid);
-            break;
-    }
-
-    next(action);
-};
+  iconFinder(resolveHome(cwd))
+  .then(icon => resolve(Buffer.from(icon).toString('base64')))
+  .catch(error => reject(defaultIcon));
+});
 
 exports.decorateTab = (Tab, { React }) => {
     return class extends React.PureComponent {
@@ -63,27 +38,102 @@ exports.decorateTab = (Tab, { React }) => {
 
             this.state = {
                 cwd: '',
-                iconData: undefined
+                iconData: defaultIcon
             };
         }
 
         render() {
             return (
-                React.createElement(Tab, Object.assign({}, this.props, "Hola"))
-            );
+              React.createElement(Tab, Object.assign({},this.props,{
+                customChildren: React.createElement('div',{},
+                  React.createElement('img', {className: 'folder_icon', width: 24, height: 24, src:"data:image/png;base64," + this.state.iconData})
+                )
+              })));
         }
 
         componentDidMount() {
-            this.interval = setInterval(() => {
-                this.setState({
-                    cwd: cwd,
-                    iconData: iconData
-                });
-            }, 1000);
+          localCwd(this.props.text)
+          .then((icon) => {
+            this.setState({
+              cwd: this.props.text,
+              iconData: icon
+            });
+          })
+          .catch((icon) => {
+            this.setState({
+              cwd: this.props.text,
+              iconData: icon
+            });
+          });
         }
 
-        componentWillUnmount() {
-            clearInterval(this.interval);
+        componentDidUpdate(prevProps,prevState) {
+
+          if (prevProps.text !== this.props.text) {
+            localCwd(this.props.text)
+            .then((icon) => {
+              this.setState({
+                cwd: this.props.text,
+                iconData: icon
+              });
+            })
+            .catch((icon) => {
+              this.setState({
+                cwd: this.props.text,
+                iconData: icon
+              });
+            });
+          }
         }
     };
+};
+
+exports.decorateTabs = (Tabs, { React }) => {
+  return class extends React.PureComponent {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            iconData: defaultIcon
+        };
+    }
+
+    componentDidUpdate(prevProps,prevState) {
+
+      const { tabs } = this.props;
+
+      if (tabs.length === 1 && tabs[0].title !== undefined) {
+        localCwd(tabs[0].title)
+        .then((icon) => {
+          this.setState({
+            iconData: icon
+          });
+        })
+        .catch((icon) => {
+          this.setState({
+            iconData: icon
+          });
+        });
+      }
+    }
+
+    render() {
+      const { tabs } = this.props;
+
+      let newProps = this.props;
+
+      if (tabs.length === 1) {
+        newProps = Object.assign({},this.props,{
+          customChildren: React.createElement('div',{},
+            React.createElement('img', {className: 'folder_icon', width: 24, height: 24, src:"data:image/png;base64," + this.state.iconData})
+          )
+        });
+      }
+
+      return (
+        React.createElement(Tabs, newProps)
+      );
+    }
+  }
 };

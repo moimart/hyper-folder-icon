@@ -2,9 +2,19 @@
   "name": "hyper-folder-icon",
   "version": "1.0.0",
   "description": "Use folder icons in MacOS with Hyper",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "files": [
+    "dist/index.js"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prebuild": "rimraf ./dist",
+    "build": "rollup -c ./rollup.config.js",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint -c ./package.json ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moimart/hyper-folder-icon.git"
   },
   "keywords": [
     "hyper"
@@ -13,6 +23,27 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "apple-icns": "git+https://github.com/moimart/node-apple-icns.git",
+    "react": "^16.3.2",
     "resourceforkjs": "0.0.4"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-inline-react-svg": "^0.4.0",
+    "babel-plugin-styled-components": "^1.2.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^4.7.2",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.4.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.50.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.1",
+    "rollup-plugin-node-resolve": "^3.0.0"
   }
 }

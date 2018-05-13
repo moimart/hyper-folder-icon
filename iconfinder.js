@@ -45,6 +45,7 @@ var iconFinder = (folder) => new Promise((resolve,reject) => {
 
 exports.iconFinder = iconFinder;
 
+/*
 iconFinder('/Users/moimart') // Specify a folder
 .then((icon) => {
   console.log(icon);
@@ -57,3 +58,4 @@ iconFinder('/Users/moimart') // Specify a folder
   })
 })
 .catch((error) => console.log(error));
+*/
