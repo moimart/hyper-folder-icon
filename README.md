@@ -1,7 +1,15 @@
 hyper-folder-icon
+======
 
-THIS IS STILL WORK IN PROGRESS!!!
+#1 Custom MacOS folder icons shown in Hyper terminal Tabs
 
-It fetches the assigned icon from a MacOS folder as a Buffer
+..* ICNS reading by https://github.com/moimart/node-apple-icns (modified version of https://github.com/moimart/node-apple-icns which I will try to merge with the author)
+..* Resource fork by https://github.com/mattsoulanille/ResourceForkJS
+..* Default folder icon from mac
 
-When I get to it, HyperTerm might show the icon of the folder in MacOS
+## TODO
+
+1. Customizable defaultIcon
+2. Customizable size and position
+
+![alt text](https://i.imgur.com/4y2Oj6D.png "Real world example")
