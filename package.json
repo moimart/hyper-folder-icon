@@ -17,7 +17,8 @@
   "author": "Moises Martinez",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "apple-icns": "git+https://github.com/moimart/node-apple-icns.git",
+    "apple-icns": "git+https://github.com/moimart/node-apple-icns.git#buffer-change",
+    "plist": "^3.0.1",
     "resourceforkjs": "0.0.4"
   }
 }

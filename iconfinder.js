@@ -1,45 +1,183 @@
-const Icns = require('apple-icns')
+const Icns = require('apple-icns');
 const resourceFork = require('resourceforkjs').resourceFork;
+const fs = require('fs');
+const plist = require('plist');
 
-var iconFinder = (folder) => new Promise((resolve,reject) => {
-  
-  let file = new resourceFork(folder + '/Icon\r');
+const RESOURCEFORK = 'rf';
+const APPFOLDER = 'apf';
+const VOLUMEFOLDER = 'vf';
+const MOUNTVOLUME = 'mvf';
+const GNOME = 'gf';
+const WINDOWS = 'wf';
 
-  file.read()
-  .then(() => {
-    let buffer = Buffer.from(file.resources['icns'][49081].data.buffer,260);
-    let icon = new Icns(buffer);
+let loadPlist = (file) => {
+  return list.parse(
+    fs.readFileSync(file, 'utf8')
+  );
+}
 
-    try {
-      icon.open((error) => {
-        if (error) {
-          return reject(error);
+class AbstractFile {
+  constructor(folder) {
+
+    this.folder = folder;
+    this.type = RESOURCEFORK;
+    this.mount = '/';
+
+    switch(process.platform) {
+      case 'darwin': {
+        if (folder.substr(folder.length - 4) === '.app') {
+          this.type = APPFOLDER;
+        } else if (folder === '/') {
+          this.type = VOLUMEFOLDER;
+        } else {
+          let mount = folder.split('/');
+
+          if (mount[1] === 'Volumes' && mount.length > 2) {
+            let _mount = '/' + p[1] + '/' + p[2] + '/.VolumeIcon.icns';
+            if (fs.existsSync(_mount)) {
+              this.mount = _mount;
+              this.type = MOUNTVOLUME;
+            }
+          }
         }
+      }
+      break;
+      case 'win32':
+      case 'linux':
+      default:
+      break;
+    }
+  }
 
-        //icon.entries.forEach((entry) => console.log(entry.type));
+  read() {
 
-        var found = icon.entries.find((entry) => {
-          return (entry.type === 'ic07' || entry.type === 'ic08');
+    let iconReading = (icon) => new Promise((resolve,reject) => {
+      try {
+        icon.open((error) => {
+          if (error) {
+            return reject(error);
+          }
+
+          //icon.entries.forEach((entry) => console.log(entry.type));
+
+          var found = icon.entries.find((entry) => {
+            return (entry.type === 'ic07' || entry.type === 'ic08');
+          })
+
+          if (found) {
+            icon.readEntryData(found, ( error, _buffer ) => {
+              if (error) {
+                return reject(error);
+              }
+
+              resolve(_buffer);
+            });
+          } else {
+            resolve('Icon not found');
+          }
+
         })
+      } catch (exception) {
+        reject('Cannot open icns ' + exception);
+      }
+    });
 
-        if (found) {
-          icon.readEntryData(found, ( error, _buffer ) => {
-            if (error) {
-              return reject(error);
+    switch (this.type) {
+      case RESOURCEFORK:
+        return new Promise((resolve,reject) => {
+          let file = new resourceFork(this.folder + '/Icon\r');
+
+          file.read()
+          .then(() => {
+            let buffer = Buffer.from(file.resources['icns'][49081].data.buffer,260);
+            let icon = new Icns(buffer);
+
+            iconReading(icon)
+            .then((ret) => resolve(ret))
+            .catch((err) => reject(err));
+          })
+          .catch((error) => reject(error));
+        });
+        break;
+      case VOLUMEFOLDER:
+        return new Promise((resolve,reject) => {
+
+          fs.readFile('/.VolumeIcon.icns', (err,data) => {
+              if (err) {
+                return reject(err);
+              }
+
+              let icon = new Icns(data);
+
+              iconReading(icon)
+              .then((ret) => resolve(ret))
+              .catch((err) => reject(err));
+            });
+        });
+
+        break;
+      case MOUNTVOLUME:
+        return new Promise((resolve,reject) => {
+
+          fs.readFile(this.mount, (err,data) => {
+              if (err) {
+                return reject(err);
+              }
+
+              let icon = new Icns(data);
+
+              iconReading(icon)
+              .then((ret) => resolve(ret))
+              .catch((err) => reject(err));
+            });
+        });
+
+        break;
+      case APPFOLDER:
+        return new Promise((resolve,reject) => {
+
+          fs.readFile(this.folder + '/Contents/Info.plist', (err,data) => {
+            if (err) {
+              return reject(err);
             }
 
-            resolve(_buffer);
+            let info = plist.parse(data.toString('utf8'));
+
+            if (!info.hasOwnProperty('CFBundleIconFile')) {
+              reject('No icon found');
+            }
+
+            fs.readFile(this.folder
+              + '/Contents/Resources/'
+              + info.CFBundleIconFile , (err,data) => {
+                if (err) {
+                  return reject(err);
+                }
+
+                let icon = new Icns(data);
+
+                iconReading(icon)
+                .then((ret) => resolve(ret))
+                .catch((err) => reject(err));
+              })
           });
-        } else {
-          resolve('Icon not found');
-        }
+        });
+        break;
+      case GNOME:
+      case WINDOWS:
+      default:
+        break;
 
-      })
-    } catch (exception) {
-      reject('Cannot open icns');
     }
+  }
+}
 
-  })
+var iconFinder = (folder) => new Promise((resolve,reject) => {
+
+  let file = new AbstractFile(folder);
+
+  file.read()
+  .then((buffer) => resolve(buffer))
   .catch((error) => reject(error));
 });
 

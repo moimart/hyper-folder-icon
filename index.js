@@ -1,6 +1,27 @@
 const iconFinder = require('./iconfinder').iconFinder;
 const defaultIcon = require('./defaultIcon').icon;
 const path = require('path');
+const { exec } = require('child_process');
+
+let pid;
+var rcwd = '';
+
+const setCwd = (pid, action) => {
+    if (process.platform == 'win32') {
+        let directoryRegex = /([a-zA-Z]:[^\:\[\]\?\"\<\>\|]+)/mi;
+        if (action && action.data) {
+            let _path = directoryRegex.exec(action.data);
+            if(_path){
+                rcwd = _path[0];
+            }
+        }
+    } else {
+        exec(`lsof -p ${pid} | awk '$4=="cwd"' | tr -s ' ' | cut -d ' ' -f9-`, (err, stdout) => {
+            rcwd = stdout.trim();
+        });
+    }
+
+};
 
 const localCwd = (cwd) => new Promise((resolve,reject) => {
 
@@ -12,17 +33,20 @@ const localCwd = (cwd) => new Promise((resolve,reject) => {
       if (filepath[0] !== '/') {
         return undefined;
       }
+
       return filepath;
   }
-
-  console.log('THE FILE PATH TO ' + cwd);
 
   let realPath = resolveHome(cwd);
 
   if (realPath !== undefined) {
-    iconFinder(resolveHome(cwd))
+    iconFinder(realPath)
     .then(icon => resolve(Buffer.from(icon).toString('base64')))
-    .catch(error => reject(defaultIcon));
+    .catch(error => {
+      iconFinder('/')
+      .then(icon => resolve(Buffer.from(icon).toString('base64')))
+      .catch(error => reject(defaultIcon));
+    });
   }
 });
 
@@ -46,8 +70,17 @@ exports.decorateTab = (Tab, { React }) => {
             super(props);
 
             this.state = {
-                iconData: defaultIcon
+                iconData: defaultIcon,
+                cwd: rcwd
             };
+
+            this.interval = setInterval(() => {
+              this.setState({cwd: rcwd});
+            },1000);
+        }
+
+        componentWillUnmount() {
+            clearInterval(this.interval);
         }
 
         render() {
@@ -65,7 +98,7 @@ exports.decorateTab = (Tab, { React }) => {
         }
 
         componentDidMount() {
-          localCwd(this.props.text)
+          localCwd(this.state.cwd)
           .then((icon) => {
             this.setState({
               iconData: icon
@@ -80,8 +113,8 @@ exports.decorateTab = (Tab, { React }) => {
 
         componentDidUpdate(prevProps,prevState) {
 
-          if (prevProps.text !== this.props.text) {
-            localCwd(this.props.text)
+          if (prevState.cwd !== this.state.cwd && this.props.isActive) {
+            localCwd(this.state.cwd)
             .then((icon) => {
               this.setState({
                 iconData: icon
@@ -104,8 +137,17 @@ exports.decorateTabs = (Tabs, { React }) => {
         super(props);
 
         this.state = {
-            iconData: defaultIcon
+            iconData: defaultIcon,
+            cwd: rcwd
         };
+
+        this.interval = setInterval(() => {
+          this.setState({cwd: rcwd});
+        },1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
     componentDidUpdate(prevProps,prevState) {
@@ -113,7 +155,26 @@ exports.decorateTabs = (Tabs, { React }) => {
       const { tabs } = this.props;
 
       if (tabs.length === 1 && tabs[0].title !== undefined) {
-        localCwd(tabs[0].title)
+
+        if (prevState.cwd !== this.state.cwd) {
+
+          localCwd(this.props.cwd)
+          .then((icon) => {
+            this.setState({
+              iconData: icon
+            });
+          })
+          .catch((icon) => {
+            this.setState({
+              iconData: icon
+            });
+          });
+        }
+      }
+
+      if (prevState.cwd !== this.state.cwd) {
+
+        localCwd(this.state.cwd)
         .then((icon) => {
           this.setState({
             iconData: icon
@@ -150,4 +211,36 @@ exports.decorateTabs = (Tabs, { React }) => {
       );
     }
   }
+};
+
+
+exports.middleware = (store) => (next) => (action) => {
+    const uids = store.getState().sessions.sessions;
+
+    switch (action.type) {
+        case 'SESSION_SET_XTERM_TITLE':
+            pid = uids[action.uid].pid;
+            break;
+
+        case 'SESSION_ADD':
+            pid = action.pid;
+            setCwd(pid);
+            break;
+
+        case 'SESSION_ADD_DATA':
+            const { data } = action;
+            const enterKey = data.indexOf('\n') > 0;
+
+            if (enterKey) {
+                setCwd(pid, action);
+            }
+            break;
+
+        case 'SESSION_SET_ACTIVE':
+            pid = uids[action.uid].pid;
+            setCwd(pid);
+            break;
+    }
+
+    next(action);
 };
