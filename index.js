@@ -42,11 +42,7 @@ const localCwd = (cwd) => new Promise((resolve,reject) => {
   if (realPath !== undefined) {
     iconFinder(realPath)
     .then(icon => resolve(Buffer.from(icon).toString('base64')))
-    .catch(error => {
-      iconFinder('/')
-      .then(icon => resolve(Buffer.from(icon).toString('base64')))
-      .catch(error => reject(defaultIcon));
-    });
+    .catch(error => reject(defaultIcon));
   }
 });
 

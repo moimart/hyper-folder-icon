@@ -27,8 +27,6 @@ class AbstractFile {
       case 'darwin': {
         if (folder.substr(folder.length - 4) === '.app') {
           this.type = APPFOLDER;
-        } else if (folder === '/') {
-          this.type = VOLUMEFOLDER;
         } else {
           let mount = folder.split('/');
 
@@ -37,7 +35,11 @@ class AbstractFile {
             if (fs.existsSync(_mount)) {
               this.mount = _mount;
               this.type = MOUNTVOLUME;
+            } else {
+              this.type = VOLUMEFOLDER;
             }
+          } else if (!fs.existsSync(folder + '/Icon\r' )) {
+              this.type = VOLUMEFOLDER;
           }
         }
       }
