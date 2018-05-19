@@ -1,10 +1,12 @@
 {
   "name": "hyper-folder-icon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Use folder icons in MacOS with Hyper",
   "main": "./index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "defaultIcon.js",
+    "iconfinder.js"
   ],
   "scripts": {},
   "repository": {
