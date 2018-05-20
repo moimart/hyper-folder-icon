@@ -13,10 +13,10 @@ hyper-folder-icon
 
 ## Optional Configuration keys
 
-tabIconSize: default 24 -> Integer (Note: This is a pixel value)
-tabIconAlpha: default 1.0 -> Float
-tabIconTopMargin: default -30 -> Integer (Note: This is a pixel value)
-tabIconLeftMargin: defatul 10 -> Integer (Note: This is a percentage value)
+- tabIconSize: default 24 -> Integer (Note: This is a pixel value)
+- tabIconAlpha: default 1.0 -> Float
+- tabIconTopMargin: default -30 -> Integer (Note: This is a pixel value)
+- tabIconLeftMargin: defatul 10 -> Integer (Note: This is a percentage value)
 
 ## Notes
 
