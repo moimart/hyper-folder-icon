@@ -50,14 +50,33 @@ const localCwd = (cwd) => new Promise((resolve,reject) => {
 });
 
 exports.decorateConfig = (config) => {
+
+    let iconSize = (
+      Number.isInteger(config.tabIconSize)
+    ) ? config.tabIconSize : 24;
+
+    let opacity = Number.parseFloat(config.tabIconAlpha);
+    opacity = (opacity === NaN) ? 1.0 : opacity;
+
+    let leftMargin = (
+      Number.isInteger(config.tabIconLeftMargin)
+    ) ? config.tabIconLeftMargin : 10;
+
+    let topMargin = (
+      Number.isInteger(config.tabIconTopMargin)
+    ) ? config.tabIconTopMargin : -30;
+
     return Object.assign({}, config, {
         css: `
             ${config.css || ''}
             .folder_icon {
               display: inline-flex;
               float: left;
-              margin-top: -30px;
-              margin-left: 10%;
+              margin-top: ${topMargin}px;
+              margin-left: ${leftMargin}%;
+              width: ${iconSize}px;
+              height: ${iconSize}px;
+              opacity: ${opacity};
             }
         `
     });
@@ -88,8 +107,6 @@ exports.decorateTab = (Tab, { React }) => {
                 customChildren: React.createElement('div',{},
                   React.createElement('img', {
                     className: 'folder_icon',
-                    width: 24,
-                    height: 24,
                     src:"data:image/png;base64," + this.state.iconData
                   })
                 )
@@ -197,8 +214,6 @@ exports.decorateTabs = (Tabs, { React }) => {
           customChildren: React.createElement('div',{},
             React.createElement('img', {
               className: 'folder_icon',
-              width: 24,
-              height: 24,
               src:"data:image/png;base64," + this.state.iconData
             })
           )

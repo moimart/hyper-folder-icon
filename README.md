@@ -3,13 +3,26 @@ hyper-folder-icon
 
 # Custom MacOS folder icons shown in Hyper terminal Tabs
 
-- ICNS reading by https://github.com/moimart/node-apple-icns (modified version of https://github.com/moimart/node-apple-icns which I will try to merge with the author)
+# Features for MacOS:
+
+- Show icon of current folder if custom icon has been applied to the folder
+- Show Volume icon of the HD if the folder does not have a custom icon
+- Show Volume icon of additional Volumes if a custom icon has been applied to the Volume
+- Show App icon if inside of the .app folder
+- Show a default icon if no icon can be found
+
+## Optional Configuration keys
+
+tabIconSize: default 24 -> Integer (Note: This is a pixel value)
+tabIconAlpha: default 1.0 -> Float
+tabIconTopMargin: default -30 -> Integer (Note: This is a pixel value)
+tabIconLeftMargin: defatul 10 -> Integer (Note: This is a percentage value)
+
+## Notes
+
+- ICNS reading by https://github.com/moimart/node-apple-icns
 - Resource fork by https://github.com/mattsoulanille/ResourceForkJS
 - Default folder icon from mac
 
-## TODO
-
-1. Customizable defaultIcon
-2. Customizable size and position
 
 ![alt text](https://i.imgur.com/4y2Oj6D.png "Real world example")

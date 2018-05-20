@@ -29,9 +29,10 @@ class AbstractFile {
           this.type = APPFOLDER;
         } else {
           let mount = folder.split('/');
-
-          if (mount[1] === 'Volumes' && mount.length > 2) {
-            let _mount = '/' + p[1] + '/' + p[2] + '/.VolumeIcon.icns';
+          
+          if (mount[1] == 'Volumes' && mount.length > 2) {
+            let _mount = '/' + mount[1] + '/' + mount[2] + '/.VolumeIcon.icns';
+            console.log('read ' + _mount);
             if (fs.existsSync(_mount)) {
               this.mount = _mount;
               this.type = MOUNTVOLUME;
