@@ -1,12 +1,13 @@
 {
   "name": "hyper-folder-icon",
-  "version": "1.1.0",
-  "description": "Use folder icons in MacOS with Hyper",
+  "version": "1.1.1",
+  "description": "Use folder icons in MacOS and Windows with Hyper",
   "main": "./index.js",
   "files": [
     "index.js",
     "defaultIcon.js",
-    "iconfinder.js"
+    "iconfinder.js",
+    "folder.png"
   ],
   "scripts": {},
   "repository": {
@@ -20,6 +21,9 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "apple-icns": "git+https://github.com/moimart/node-apple-icns.git#buffer-change",
+    "decode-ico": "^0.2.1",
+    "ini-config-parser": "^1.0.3",
+    "lodepng": "^1.1.0",
     "plist": "^3.0.1",
     "resourceforkjs": "0.0.4"
   }
