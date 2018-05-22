@@ -25,11 +25,12 @@ class AbstractFile {
 
     switch(process.platform) {
       case 'darwin': {
-        if (folder.substr(folder.length - 4) === '.app') {
+        if (/\.app/.test(folder)) {
+          console.log('HYAYAYA ' + this.folder);
           this.type = APPFOLDER;
         } else {
           let mount = folder.split('/');
-          
+
           if (mount[1] == 'Volumes' && mount.length > 2) {
             let _mount = '/' + mount[1] + '/' + mount[2] + '/.VolumeIcon.icns';
             console.log('read ' + _mount);
@@ -139,7 +140,29 @@ class AbstractFile {
       case APPFOLDER:
         return new Promise((resolve,reject) => {
 
-          fs.readFile(this.folder + '/Contents/Info.plist', (err,data) => {
+          let findApp = (folders) => {
+            for (let i = 0; i < folders.length; i++) {
+              if (folders[i].substr(folders[i].length -  4) === '.app') {
+                return i;
+              }
+            }
+
+            return undefined;
+          }
+
+          console.log('HERE ' + this.folder);
+
+          let folderIndex = findApp(this.folder.split('/'));
+
+          if (!folderIndex) {
+            reject('No app found');
+          }
+
+          let folder = this.folder.split('/').slice(0,folderIndex + 1).join('/');
+
+          console.log(folderIndex + ' ' + folder);
+
+          fs.readFile(folder + '/Contents/Info.plist', (err,data) => {
             if (err) {
               return reject(err);
             }
@@ -150,7 +173,7 @@ class AbstractFile {
               reject('No icon found');
             }
 
-            fs.readFile(this.folder
+            fs.readFile(folder
               + '/Contents/Resources/'
               + info.CFBundleIconFile , (err,data) => {
                 if (err) {
