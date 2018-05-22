@@ -149,8 +149,6 @@ class AbstractFile {
             return undefined;
           }
 
-          console.log('HERE ' + this.folder);
-
           let folderIndex = findApp(this.folder.split('/'));
 
           if (!folderIndex) {
@@ -158,8 +156,6 @@ class AbstractFile {
           }
 
           let folder = this.folder.split('/').slice(0,folderIndex + 1).join('/');
-
-          console.log(folderIndex + ' ' + folder);
 
           fs.readFile(folder + '/Contents/Info.plist', (err,data) => {
             if (err) {
