@@ -26,14 +26,13 @@ class AbstractFile {
     switch(process.platform) {
       case 'darwin': {
         if (/\.app/.test(folder)) {
-          console.log('HYAYAYA ' + this.folder);
           this.type = APPFOLDER;
         } else {
           let mount = folder.split('/');
 
           if (mount[1] == 'Volumes' && mount.length > 2) {
             let _mount = '/' + mount[1] + '/' + mount[2] + '/.VolumeIcon.icns';
-            console.log('read ' + _mount);
+
             if (fs.existsSync(_mount)) {
               this.mount = _mount;
               this.type = MOUNTVOLUME;
