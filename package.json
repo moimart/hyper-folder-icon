@@ -24,7 +24,7 @@
     "apple-icns": "git+https://github.com/moimart/node-apple-icns.git#buffer-change",
     "decode-ico": "^0.2.1",
     "ini-config-parser": "^1.0.3",
-    "lodepng": "^1.1.0",
+    "jimp": "^0.2.28",
     "plist": "^3.0.1",
     "resourceforkjs": "0.0.4"
   }

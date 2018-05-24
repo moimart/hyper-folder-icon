@@ -2,7 +2,7 @@ const Icns = require('apple-icns');
 const resourceFork = require('resourceforkjs').resourceFork;
 const fs = require('fs');
 const plist = require('plist');
-const winIco = require('./windows');
+const winIco = require('./windows').default;
 
 const RESOURCEFORK = 'rf';
 const APPFOLDER = 'apf';
@@ -188,9 +188,12 @@ class AbstractFile {
         break;
       case GNOME:
       case WINDOWS:
-        winIco(this.folder)
-        .then((png) => resolve(png))
-        .catch((err) => reject(err));
+        return new Promise((resolve,reject) => {
+          winIco(this.folder)
+          .then((png) => resolve(png))
+          .catch((err) => reject(err));
+          console.log('going to do this' + this.folder);
+        });
         break;
       default:
         break;

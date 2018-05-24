@@ -1,7 +1,8 @@
 const fs = require('fs');
 const ico = require('decode-ico');
-const png = require('lodepng')
+const jimp = require('jimp');
 const iniParser = require('ini-config-parser');
+const path = require('path');
 
 let findRightSize = (imgs) => new Promise((resolve,reject) => {
 
@@ -11,9 +12,18 @@ let findRightSize = (imgs) => new Promise((resolve,reject) => {
     })
 
     if (found) {
-      png.encode(found)
-      .then((res) => {
-        resolve(Buffer.from(res));
+      console.log(found);
+
+      let image = new jimp(found.width,found.height, (err,image) => {
+        image.bitmap.data = found.data;
+        
+        image.getBuffer(jimp.MIME_PNG, (err,buffer) => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(buffer);
+        })
       });
 
       return;
@@ -24,9 +34,9 @@ let findRightSize = (imgs) => new Promise((resolve,reject) => {
 });
 
 module.exports = {
-  default: (path) => new Promise((resolve,reject) => {
+  default: (_path) => new Promise((resolve,reject) => {
 
-    let filePath = path + '/Desktop.ini';
+    let filePath = _path + '/Desktop.ini';
 
     fs.exists(filePath, (exists) => {
       if (!exists) {
@@ -43,7 +53,8 @@ module.exports = {
 
         if (iniFile.hasOwnProperty(".ShellClassInfo")) {
           if (iniFile[".ShellClassInfo"].IconFile) {
-            const f = fs.readFileSync(iniFile[".ShellClassInfo"].IconFile);
+
+            const f = fs.readFileSync(path.resolve(_path,iniFile[".ShellClassInfo"].IconFile));
             const _imgs = ico(f);
 
             findRightSize(_imgs)
