@@ -13,7 +13,7 @@ let findRightSize = (imgs) => new Promise((resolve,reject) => {
     if (found) {
       png.encode(found)
       .then((res) => {
-        resolve(Buffer.from(res).toString('base64'));
+        resolve(Buffer.from(res));
       });
 
       return;
@@ -26,11 +26,7 @@ let findRightSize = (imgs) => new Promise((resolve,reject) => {
 module.exports = {
   default: (path) => new Promise((resolve,reject) => {
 
-    let filePath = path + '\\Desktop.ini';
-
-    if (process.platform != 'win32') {
-      filePath = path + '/Desktop.ini';
-    }
+    let filePath = path + '/Desktop.ini';
 
     fs.exists(filePath, (exists) => {
       if (!exists) {

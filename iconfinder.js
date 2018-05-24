@@ -2,6 +2,7 @@ const Icns = require('apple-icns');
 const resourceFork = require('resourceforkjs').resourceFork;
 const fs = require('fs');
 const plist = require('plist');
+const winIco = require('./windows');
 
 const RESOURCEFORK = 'rf';
 const APPFOLDER = 'apf';
@@ -24,7 +25,7 @@ class AbstractFile {
     this.mount = '/';
 
     switch(process.platform) {
-      case 'darwin': {
+      case 'darwin':
         if (/\.app/.test(folder)) {
           this.type = APPFOLDER;
         } else {
@@ -43,12 +44,13 @@ class AbstractFile {
               this.type = VOLUMEFOLDER;
           }
         }
-      }
-      break;
+        break;
       case 'win32':
+        this.type = WINDOWS;
+        break;
       case 'linux':
       default:
-      break;
+        break;
     }
   }
 
@@ -186,6 +188,10 @@ class AbstractFile {
         break;
       case GNOME:
       case WINDOWS:
+        winIco(this.folder)
+        .then((png) => resolve(png))
+        .catch((err) => reject(err));
+        break;
       default:
         break;
 
