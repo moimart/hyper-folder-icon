@@ -24,7 +24,7 @@ hyper-folder-icon
 
 ## Notes
 
-- ICNS reading by https://github.com/moimart/node-apple-icns
+- ICNS reading by https://github.com/jhermsmeier/node-apple-icns
 - Resource fork by https://github.com/mattsoulanille/ResourceForkJS
 - Default folder icon from mac
 

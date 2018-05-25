@@ -192,7 +192,6 @@ class AbstractFile {
           winIco(this.folder)
           .then((png) => resolve(png))
           .catch((err) => reject(err));
-          console.log('going to do this' + this.folder);
         });
         break;
       default:

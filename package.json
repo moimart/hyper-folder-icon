@@ -21,7 +21,7 @@
   "author": "Moises Martinez",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "apple-icns": "git+https://github.com/moimart/node-apple-icns.git#buffer-change",
+    "apple-icns": "^0.2.0",
     "decode-ico": "^0.2.1",
     "ini-config-parser": "^1.0.3",
     "jimp": "^0.2.28",

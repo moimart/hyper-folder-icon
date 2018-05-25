@@ -16,7 +16,7 @@ let findRightSize = (imgs) => new Promise((resolve,reject) => {
 
       let image = new jimp(found.width,found.height, (err,image) => {
         image.bitmap.data = found.data;
-        
+
         image.getBuffer(jimp.MIME_PNG, (err,buffer) => {
           if (err) {
             return reject(err);
@@ -30,7 +30,7 @@ let findRightSize = (imgs) => new Promise((resolve,reject) => {
     }
   }
 
-  reject();
+  reject('No icon found');
 });
 
 module.exports = {
