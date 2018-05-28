@@ -52,6 +52,7 @@ class AbstractFile {
         break;
       case 'linux':
         this.type = GNOME;
+        break;
       default:
         break;
     }
