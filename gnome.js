@@ -25,7 +25,6 @@ let fetchIcon = (_path) => new Promise((resolve,reject) => {
 
           let cleanPath =
           newEntries[_path]['custom-icon']
-          .replace(/home/gi,"Users")
           .substr(7);
 
           let _readFile = (__path) => {
