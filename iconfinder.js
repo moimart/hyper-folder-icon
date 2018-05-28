@@ -3,6 +3,7 @@ const resourceFork = require('resourceforkjs').resourceFork;
 const fs = require('fs');
 const plist = require('plist');
 const winIco = require('./windows').default;
+const gnomeIcon = require('./gnome');
 
 const RESOURCEFORK = 'rf';
 const APPFOLDER = 'apf';
@@ -18,6 +19,7 @@ let loadPlist = (file) => {
 }
 
 class AbstractFile {
+
   constructor(folder) {
 
     this.folder = folder;
@@ -49,6 +51,7 @@ class AbstractFile {
         this.type = WINDOWS;
         break;
       case 'linux':
+        this.type = GNOME;
       default:
         break;
     }
@@ -75,10 +78,10 @@ class AbstractFile {
                 return reject(error);
               }
 
-              resolve(_buffer);
+              resolve({buffer:_buffer,format:'image/png'});
             });
           } else {
-            resolve('Icon not found');
+            reject('Icon not found');
           }
 
         })
@@ -187,10 +190,16 @@ class AbstractFile {
         });
         break;
       case GNOME:
+        return new Promise((resolve,reject) => {
+          gnomeIcon(this.folder)
+          .then((img) => resolve(img))
+          .catch((err) => reject(err));
+        });
+        break;
       case WINDOWS:
         return new Promise((resolve,reject) => {
           winIco(this.folder)
-          .then((png) => resolve(png))
+          .then((png) => resolve({buffer:png,format:'image/png'}))
           .catch((err) => reject(err));
         });
         break;

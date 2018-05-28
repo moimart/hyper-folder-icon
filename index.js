@@ -44,8 +44,11 @@ const localCwd = (cwd) => new Promise((resolve,reject) => {
 
   if (realPath !== undefined) {
     iconFinder(realPath)
-    .then(icon => resolve(Buffer.from(icon).toString('base64')))
-    .catch(error => reject(defaultIcon));
+    .then(icon => resolve({
+      buffer: Buffer.from(icon.buffer).toString('base64'),
+      format:icon.format
+    }))
+    .catch(error => reject({buffer: defaultIcon, format: "image/png" }));
   }
 });
 
@@ -88,7 +91,7 @@ exports.decorateTab = (Tab, { React }) => {
             super(props);
 
             this.state = {
-                iconData: defaultIcon,
+                iconData: {buffer: defaultIcon, format: "image/png" },
                 cwd: rcwd
             };
 
@@ -107,7 +110,7 @@ exports.decorateTab = (Tab, { React }) => {
                 customChildren: React.createElement('div',{},
                   React.createElement('img', {
                     className: 'folder_icon',
-                    src:"data:image/png;base64," + this.state.iconData
+                    src:"data:" + this.state.iconData.format + ";base64," + this.state.iconData.buffer
                   })
                 )
               })));
@@ -153,7 +156,7 @@ exports.decorateTabs = (Tabs, { React }) => {
         super(props);
 
         this.state = {
-            iconData: defaultIcon,
+            iconData: {buffer: defaultIcon, format: "image/png" },
             cwd: rcwd
         };
 
@@ -214,7 +217,7 @@ exports.decorateTabs = (Tabs, { React }) => {
           customChildren: React.createElement('div',{},
             React.createElement('img', {
               className: 'folder_icon',
-              src:"data:image/png;base64," + this.state.iconData
+              src:"data:" + this.state.iconData.format + ";base64," + this.state.iconData.buffer
             })
           )
         });

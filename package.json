@@ -23,8 +23,10 @@
   "dependencies": {
     "apple-icns": "^0.2.0",
     "decode-ico": "^0.2.1",
+    "gvfs-meta-node": "^0.1.1",
     "ini-config-parser": "^1.0.3",
     "jimp": "^0.2.28",
+    "mime-types": "^2.1.18",
     "plist": "^3.0.1",
     "resourceforkjs": "0.0.4"
   }
