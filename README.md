@@ -7,7 +7,7 @@ hyper-folder-icon
 
 From hyper terminal: hyper i hyper-folder-icon
 
-# Features for MacOS:
+# Features for macOS:
 
 - Show icon of current folder if custom icon has been applied to the folder
 - Show Volume icon of the HD if the folder does not have a custom icon
@@ -15,11 +15,11 @@ From hyper terminal: hyper i hyper-folder-icon
 - Show App icon if inside of the .app folder
 - Show a default icon if no icon can be found
 
-# Features for WINDOWS (Untested)
+# Features for Windows (Untested)
 
 - Show icon from Desktop.ini file
 
-# Features for Linux/gnome
+# Features for Linux/GNOME
 
 - Show custom GNOME icon from gvfs metadata
 

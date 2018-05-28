@@ -44,7 +44,7 @@ let fetchIcon = (_path) => new Promise((resolve,reject) => {
 
                   let format = mime.lookup(newPath);
 
-                  return resolve({
+                  resolve({
                     buffer:newData.toString((format != "image/svg+xml") ? 'base64' : undefined),
                     format:format
                   });
@@ -53,7 +53,7 @@ let fetchIcon = (_path) => new Promise((resolve,reject) => {
               } else {
                 let format = mime.lookup(cleanPath);
 
-                return resolve({
+                resolve({
                   buffer:data.toString((format != "image/svg+xml") ? 'base64' : undefined),
                   format:mime.lookup(cleanPath)
                 });
