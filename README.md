@@ -15,6 +15,10 @@ hyper-folder-icon
 
 - Show icon from Desktop.ini file
 
+# Features for Linux/gnome
+
+- Show custom GNOME icon from gvfs metadata
+
 ## Optional Configuration keys
 
 - tabIconSize: default 24 -> Integer (Note: This is a pixel value)
