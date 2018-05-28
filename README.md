@@ -3,6 +3,10 @@ hyper-folder-icon
 
 # Custom MacOS and Windows folder icons shown in Hyper terminal Tabs
 
+# Install
+
+From hyper terminal: hyper i hyper-folder-icon
+
 # Features for MacOS:
 
 - Show icon of current folder if custom icon has been applied to the folder
@@ -33,4 +37,6 @@ hyper-folder-icon
 - Default folder icon from mac
 
 
-![alt text](https://i.imgur.com/4y2Oj6D.png "Real world example")
+![alt text](https://i.imgur.com/4y2Oj6D.png "MacOS Screenshot")
+
+![alt text](https://i.imgur.com/PlsxHq2.png "GNOME/Linux Screenshot")
