@@ -54,7 +54,9 @@ module.exports = {
         if (iniFile.hasOwnProperty(".ShellClassInfo")) {
           if (iniFile[".ShellClassInfo"].IconFile) {
 
-            const f = fs.readFileSync(path.resolve(_path,iniFile[".ShellClassInfo"].IconFile));
+            const f = fs.readFileSync(
+              path.resolve(_path,iniFile[".ShellClassInfo"].IconFile.split(',')[0])
+            );
             const _imgs = ico(f);
 
             findRightSize(_imgs)
