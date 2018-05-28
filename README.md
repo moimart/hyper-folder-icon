@@ -5,7 +5,7 @@ hyper-folder-icon
 
 # Install
 
-From hyper terminal: hyper i hyper-folder-icon
+From hyper terminal: `hyper i hyper-folder-icon`
 
 # Features for macOS:
 
