@@ -1,5 +1,5 @@
 const fs = require('fs');
-const path  = require('path');
+const path = require('path');
 const gvfs = require('gvfs-meta-node');
 const mime = require('mime-types');
 
@@ -23,9 +23,7 @@ let fetchIcon = (_path) => new Promise((resolve,reject) => {
       if (newEntries.hasOwnProperty(_path)) {
         if (newEntries[_path].hasOwnProperty('custom-icon')) {
 
-          let cleanPath =
-          newEntries[_path]['custom-icon']
-          .substr(7);
+          let cleanPath = newEntries[_path]['custom-icon'].substr(7);
 
           let _readFile = (__path) => {
             fs.readFile(cleanPath, (err,data) => {
@@ -35,7 +33,6 @@ let fetchIcon = (_path) => new Promise((resolve,reject) => {
 
               if (/\.svg$/.test(data.toString())) {
                 let newPath = path.dirname(cleanPath) + '/' + data.toString();
-                console.log(newPath);
 
                 fs.readFile(newPath, (err,newData) => {
                   if (err) {
