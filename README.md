@@ -15,6 +15,10 @@ From hyper terminal: `hyper i hyper-folder-icon`
 - Show App icon if inside of the .app folder
 - Show a default icon if no icon can be found
 
+- Integrates with hyper-tab-touchbar showing the icons in the MacBook Pro's TouchBar
+
+![hyper-tab-touchbar integration](https://i.imgur.com/2pnvB1w.jpg)
+
 # Features for Windows (Untested)
 
 - Show icon from Desktop.ini file
