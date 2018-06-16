@@ -85,6 +85,10 @@ exports.decorateConfig = (config) => {
     });
 };
 
+exports.getTabProps = (uid,parentProps,props) => {
+  return Object.assign({},props,{uid: uid.uid});
+}
+
 exports.decorateTab = (Tab, { React }) => {
     return class extends React.PureComponent {
         constructor(props) {
@@ -116,34 +120,38 @@ exports.decorateTab = (Tab, { React }) => {
               })));
         }
 
+
+
         componentDidMount() {
+
+          let updateIcon = (icon) => {
+            window.store.dispatch({
+              type: 'FOLDER_ICON',
+              icon: {
+                iconData: icon,
+                cwd:this.state.cwd,
+                uid:this.props.uid
+              }
+            });
+
+            this.setState({
+              iconData: icon
+            });
+          };
+
           localCwd(this.state.cwd)
           .then((icon) => {
-            this.setState({
-              iconData: icon
-            });
+            updateIcon(icon);
           })
           .catch((icon) => {
-            this.setState({
-              iconData: icon
-            });
+            updateIcon(icon);
           });
         }
 
         componentDidUpdate(prevProps,prevState) {
 
           if (prevState.cwd !== this.state.cwd && this.props.isActive) {
-            localCwd(this.state.cwd)
-            .then((icon) => {
-              this.setState({
-                iconData: icon
-              });
-            })
-            .catch((icon) => {
-              this.setState({
-                iconData: icon
-              });
-            });
+            this.componentDidMount();
           }
         }
     };
