@@ -4,6 +4,10 @@ const fs = require('fs');
 const plist = require('plist');
 const winIco = require('./windows').default;
 const gnomeIcon = require('./gnome');
+const _p = require('promisfy');
+
+const exists = _p.promisfyNoError(fs.exists);
+const readFile = _p.promisfy(fs.readFile);
 
 const RESOURCEFORK = 'rf';
 const APPFOLDER = 'apf';
@@ -42,8 +46,6 @@ class AbstractFile {
             } else {
               this.type = VOLUMEFOLDER;
             }
-          } else if (!fs.existsSync(folder + '/Icon\r' )) {
-              this.type = VOLUMEFOLDER;
           }
         }
         break;
@@ -94,18 +96,42 @@ class AbstractFile {
     switch (this.type) {
       case RESOURCEFORK:
         return new Promise((resolve,reject) => {
-          let file = new resourceFork(this.folder + '/Icon\r');
 
-          file.read()
-          .then(() => {
-            let buffer = Buffer.from(file.resources['icns'][49081].data.buffer,260);
-            let icon = new Icns(buffer);
+          let _findIcon = (folder) => new Promise(async (resolve,reject) => {
 
-            iconReading(icon)
-            .then((ret) => resolve(ret))
-            .catch((err) => reject(err));
-          })
-          .catch((error) => reject(error));
+            while (!await exists(folder + '/Icon\r')) {
+              folder = folder.split('/').slice(0,-1).join('/');
+
+              if (folder == "") {
+                break;
+              }
+            }
+
+            if (folder == "") {
+              const data = await readFile('/.VolumeIcon.icns').catch(err => reject(err));
+              let icon = new Icns(data);
+              const ret = iconReading(icon).catch(err => reject(err));
+              resolve(ret);
+
+            } else {
+              let file = new resourceFork(folder + '/Icon\r');
+
+              try {
+                await file.read();
+                let buffer = Buffer.from(file.resources['icns'][49081].data.buffer,260);
+                let icon = new Icns(buffer);
+                const ret = await iconReading(icon);
+                resolve(ret);
+
+              } catch (error) {
+                reject(error);
+              }
+            }
+          });
+
+          _findIcon(this.folder.slice())
+          .then(ret => resolve(ret))
+          .catch(error => reject(error));
         });
         break;
       case VOLUMEFOLDER:

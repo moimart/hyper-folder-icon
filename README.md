@@ -10,12 +10,13 @@ From hyper terminal: `hyper i hyper-folder-icon`
 # Features for macOS:
 
 - Show icon of current folder if custom icon has been applied to the folder
-- Show Volume icon of the HD if the folder does not have a custom icon
+- <=1.4.0: ~~Show Volume icon of the HD if the folder does not have a custom icon~~
+- ^1.5.0 Show icon of any of the parent folders. If there is no, show the Volume icon.
 - Show Volume icon of additional Volumes if a custom icon has been applied to the Volume
 - Show App icon if inside of the .app folder
 - Show a default icon if no icon can be found
 
-- Integrates with hyper-tab-touchbar showing the icons in the MacBook Pro's TouchBar
+- Integrates with [hyper-tab-touchbar](https://github.com/moimart/hyper-tab-touchbar) showing the icons in the MacBook Pro's TouchBar
 
 ![hyper-tab-touchbar integration](https://i.imgur.com/2pnvB1w.jpg)
 
