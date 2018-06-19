@@ -28,10 +28,10 @@ class AbstractFile {
   async init() {
     switch(process.platform) {
       case 'darwin':
-        if (/\.app/.test(folder)) {
+        if (/\.app/.test(this.folder)) {
           this.type = APPFOLDER;
         } else {
-          let mount = folder.split('/');
+          let mount = this.folder.split('/');
 
           if (mount[1] == 'Volumes' && mount.length > 2) {
             let _mount = '/' + mount[1] + '/' + mount[2] + '/.VolumeIcon.icns';
