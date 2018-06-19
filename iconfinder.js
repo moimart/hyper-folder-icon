@@ -16,12 +16,6 @@ const MOUNTVOLUME = 'mvf';
 const GNOME = 'gf';
 const WINDOWS = 'wf';
 
-let loadPlist = (file) => {
-  return list.parse(
-    fs.readFileSync(file, 'utf8')
-  );
-}
-
 class AbstractFile {
 
   constructor(folder) {
@@ -130,8 +124,8 @@ class AbstractFile {
           });
 
           _findIcon(this.folder.slice())
-          .then(ret => resolve(ret))
-          .catch(error => reject(error));
+            .then(ret => resolve(ret))
+            .catch(error => reject(error));
         });
         break;
       case VOLUMEFOLDER:
@@ -145,8 +139,8 @@ class AbstractFile {
               let icon = new Icns(data);
 
               iconReading(icon)
-              .then((ret) => resolve(ret))
-              .catch((err) => reject(err));
+                .then((ret) => resolve(ret))
+                .catch((err) => reject(err));
             });
         });
 
@@ -162,14 +156,14 @@ class AbstractFile {
               let icon = new Icns(data);
 
               iconReading(icon)
-              .then((ret) => resolve(ret))
-              .catch((err) => reject(err));
+                .then((ret) => resolve(ret))
+                .catch((err) => reject(err));
             });
         });
 
         break;
       case APPFOLDER:
-        return new Promise((resolve,reject) => {
+        return new Promise(async (resolve,reject) => {
 
           let findApp = (folders) => {
             for (let i = 0; i < folders.length; i++) {
@@ -189,45 +183,42 @@ class AbstractFile {
 
           let folder = this.folder.split('/').slice(0,folderIndex + 1).join('/');
 
-          fs.readFile(folder + '/Contents/Info.plist', (err,data) => {
-            if (err) {
-              return reject(err);
-            }
+          const data =
+            await readFile(folder + '/Contents/Info.plist')
+                    .catch(err => reject('No icon found'));
 
-            let info = plist.parse(data.toString('utf8'));
+          let info = plist.parse(data.toString('utf8'));
 
-            if (!info.hasOwnProperty('CFBundleIconFile')) {
-              reject('No icon found');
-            }
+          if (!info.hasOwnProperty('CFBundleIconFile')) {
+            reject('No icon found');
+          }
 
-            fs.readFile(folder
-              + '/Contents/Resources/'
-              + info.CFBundleIconFile , (err,data) => {
-                if (err) {
-                  return reject(err);
-                }
+          const iconData =
+            await readFile(folder
+                            + '/Contents/Resources/'
+                            + info.CFBundleIconFile)
+                    .catch(err => reject(err));
 
-                let icon = new Icns(data);
+          let icon = new Icns(iconData);
 
-                iconReading(icon)
-                .then((ret) => resolve(ret))
-                .catch((err) => reject(err));
-              })
-          });
+          iconReading(icon)
+            .then((ret) => resolve(ret))
+            .catch((err) => reject(err));
+
         });
         break;
       case GNOME:
         return new Promise((resolve,reject) => {
           gnomeIcon(this.folder)
-          .then((img) => resolve(img))
-          .catch((err) => reject(err));
+            .then((img) => resolve(img))
+            .catch((err) => reject(err));
         });
         break;
       case WINDOWS:
         return new Promise((resolve,reject) => {
           winIco(this.folder)
-          .then((png) => resolve({buffer:png,format:'image/png'}))
-          .catch((err) => reject(err));
+            .then((png) => resolve({buffer:png,format:'image/png'}))
+            .catch((err) => reject(err));
         });
         break;
       default:
