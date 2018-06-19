@@ -1,6 +1,6 @@
 {
   "name": "hyper-folder-icon",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Use folder icons in MacOS and Windows with Hyper",
   "main": "./index.js",
   "files": [
