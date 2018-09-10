@@ -19,6 +19,7 @@ From hyper terminal: `hyper i hyper-folder-icon`
 - Integrates with [hyper-tab-touchbar](https://github.com/moimart/hyper-tab-touchbar) showing the icons in the MacBook Pro's TouchBar
 
 ![hyper-tab-touchbar integration](https://i.imgur.com/2pnvB1w.jpg)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmoimart%2Fhyper-folder-icon.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmoimart%2Fhyper-folder-icon?ref=badge_shield)
 
 # Features for Windows (Untested)
 
@@ -45,3 +46,7 @@ From hyper terminal: `hyper i hyper-folder-icon`
 ![alt text](https://i.imgur.com/4y2Oj6D.png "MacOS Screenshot")
 
 ![alt text](https://i.imgur.com/PlsxHq2.png "GNOME/Linux Screenshot")
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmoimart%2Fhyper-folder-icon.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmoimart%2Fhyper-folder-icon?ref=badge_large)
